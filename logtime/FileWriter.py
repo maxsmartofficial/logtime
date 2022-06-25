@@ -1,9 +1,22 @@
+import json
 
+DEFAULT_FILENAME = "./logtime_cache/default.json"
 
 class DefaultFileWriter:
-	def __init__(self):
-		pass
+	def __init__(self, filename = None):
+		if filename:
+			self.filename = filename
+		else:
+			self.filename = DEFAULT_FILENAME
 	def write(self, data):
-		pass
-	def get(self):
-		pass
+		json_string = json.dumps(data)
+		with open(self.filename, 'w') as f:
+			f.write(json_string)
+
+	def load(self):
+		try:
+			with open(self.filename, 'r') as f:
+				json_string = f.read()
+			return json.loads(data)
+		except FileNotFoundError:
+			return {}

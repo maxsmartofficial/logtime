@@ -8,8 +8,11 @@ class Logger:
 	def __init__(self, filewriter, time_function):
 		self.filewriter = filewriter
 		self.time_function = time_function
-		self.results = defaultdict(list)
 		self.timed_functions = []
+
+		self.results = defaultdict(list)
+		previous_results = self.filewriter.load()
+		self.results.update(previous_results)
 
 	def _set_filewriter(self, filewriter):
 		self.filewriter = filewriter
@@ -26,6 +29,7 @@ class Logger:
 			end_time = self.time_function()
 			total_time = end_time - start_time
 			self.results[f.__name__].append(total_time)
+			self.update()
 			return result
 		return wrapper
 
@@ -58,6 +62,8 @@ class Logger:
 		called = [t for t in timed if len(self.results[t]) > 0]
 		return called
 
+	def update(self):
+		self.filewriter.write(self.results)
 
 def create_logger():
 	filewriter = DefaultFileWriter()
