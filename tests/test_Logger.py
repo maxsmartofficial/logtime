@@ -15,7 +15,7 @@ class FileWriter:
 class Timer:
 	def __init__(self):
 		self.count = 0
-	def time():
+	def time(self):
 		result = self.count
 		self.count += 1
 		return result
@@ -79,7 +79,7 @@ def test_function_list():
 	assert(f.__name__ in lst and g.__name__ in lst and h.__name__ in lst)
 
 
-def test_list_only_run_functions():
+def test_list_only_called_functions():
 	logger = setup_sample_logger()
 
 	@logger.logtime
@@ -96,7 +96,7 @@ def test_list_only_run_functions():
 	assert(f.__name__ in lst and g.__name__ not in lst)
 
 
-def test_std_raises_exception_if_only_run_once():
+def test_std_raises_exception_if_only_called_once():
 	logger = setup_sample_logger()
 
 	@logger.logtime
