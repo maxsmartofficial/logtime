@@ -19,6 +19,6 @@ class DefaultFileWriter:
 		try:
 			with open(self.filename, 'r') as f:
 				json_string = f.read()
-			return json.loads(data)
+			return json.loads(json_string)
 		except FileNotFoundError:
 			return {}
