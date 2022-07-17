@@ -9,7 +9,7 @@ class Logger:
 		self.filewriter = filewriter
 		self.time_function = time_function
 		self.timed_functions = []
-		self.save = save
+		self.save_continuously = save
 
 		self.results = defaultdict(list)
 		previous_results = self.filewriter.load()
@@ -64,11 +64,12 @@ class Logger:
 		return called
 
 	def update(self):
-		self.filewriter.write(self.results)
+		if self.save_continuously:
+			self.save()
 
 	def save(self):
-		pass
+		self.filewriter.write(self.results)
 
 def create_logger(save=True):
 	filewriter = DefaultFileWriter()
-	return Logger(filewriter, time.time)
+	return Logger(filewriter, time.time, save=save)
