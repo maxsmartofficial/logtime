@@ -5,10 +5,11 @@ from collections import defaultdict
 from functools import wraps
 
 class Logger:
-	def __init__(self, filewriter, time_function):
+	def __init__(self, filewriter, time_function, save=True):
 		self.filewriter = filewriter
 		self.time_function = time_function
 		self.timed_functions = []
+		self.save = save
 
 		self.results = defaultdict(list)
 		previous_results = self.filewriter.load()
@@ -65,6 +66,9 @@ class Logger:
 	def update(self):
 		self.filewriter.write(self.results)
 
-def create_logger():
+	def save(self):
+		pass
+
+def create_logger(save=True):
 	filewriter = DefaultFileWriter()
 	return Logger(filewriter, time.time)

@@ -12,6 +12,15 @@ class FileWriter:
 		return self.data
 
 
+class CountingFileWriter:
+	def __init__(self, path: str):
+		self.count = 0
+	def write(self, data: dict):
+		self.data = data
+		self.count += 1
+	def get(self):
+		return self.data
+
 class Timer:
 	def __init__(self):
 		self.count = 0
@@ -116,3 +125,67 @@ def test_std_raises_exception_if_only_called_once():
 
 	with pytest.raises(Exception):
 		logger.std(f.__name__)
+
+
+def test_data_is_saved_continuously():
+	logger = create_logger()
+	filewriter = CountingFileWriter('')
+	time_function = Timer().time
+	logger._set_filewriter(filewriter)
+	logger._set_time_function(time_function)
+
+	@logger.logtime
+	def f(n):
+		return n
+
+	initial_count = filewriter.count
+
+	f(2)
+	count_1 = filewriter.count
+	f(5)
+	count_2 = filewriter.count
+
+	assert(initial_count == 0 and count_1 == 1 and count_2 == 2)
+
+
+def test_data_is_unsaved_when_specified():
+	logger = create_logger(save=False)
+	filewriter = CountingFileWriter('')
+	time_function = Timer().time
+	logger._set_filewriter(filewriter)
+	logger._set_time_function(time_function)
+
+	@logger.logtime
+	def f(n):
+		return n
+
+	initial_count = filewriter.count
+
+	f(2)
+	count_1 = filewriter.count
+	
+	assert(initial_count == 0 and count_1 == 0)
+
+
+def test_data_is_saved_when_called():
+	logger = create_logger(save=False)
+	filewriter = CountingFileWriter('')
+	time_function = Timer().time
+	logger._set_filewriter(filewriter)
+	logger._set_time_function(time_function)	
+
+	@logger.logtime
+	def f(n):
+		return n
+	
+	initial_count = filewriter.count
+
+	f(2)
+	count_1 = filewriter.count
+	f(5)
+	count_2 = filewriter.count
+
+	logger.save()
+	count_3 = filewriter.count
+
+	assert(initial_count == 0 and count_1 == 0 and count_2 == 0 and count_3 == 1)
