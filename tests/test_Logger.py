@@ -95,6 +95,15 @@ def test_list_only_called_functions():
 	lst = logger.list()
 	assert(f.__name__ in lst and g.__name__ not in lst)
 
+def test_mean_raises_exception_if_not_called():
+	logger = setup_sample_logger()
+
+	@logger.logtime
+	def f(n):
+		return n
+
+	with pytest.raises(Exception):
+		logger.std(f.__name__)
 
 def test_std_raises_exception_if_only_called_once():
 	logger = setup_sample_logger()
