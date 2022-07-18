@@ -1,24 +1,25 @@
 import pytest
 
-from logtime.Logger import create_logger
+from logtime.Logger import Logger, create_logger
 
 
 class FileWriter:
 	def __init__(self, path: str):
-		pass
+		self.data = {}
 	def write(self, data: dict):
 		self.data = data
-	def get(self):
+	def load(self):
 		return self.data
 
 
 class CountingFileWriter:
 	def __init__(self, path: str):
 		self.count = 0
+		self.data = {}
 	def write(self, data: dict):
 		self.data = data
 		self.count += 1
-	def get(self):
+	def load(self):
 		return self.data
 
 class Timer:
@@ -31,11 +32,9 @@ class Timer:
 
 
 def setup_sample_logger():
-	logger = create_logger()
 	my_filewriter = FileWriter('')
 	my_time_function = Timer().time
-	logger._set_filewriter(my_filewriter)
-	logger._set_time_function(my_time_function)
+	logger = Logger(my_filewriter, my_time_function)
 
 	return logger
 
@@ -128,11 +127,9 @@ def test_std_raises_exception_if_only_called_once():
 
 
 def test_data_is_saved_continuously():
-	logger = create_logger()
 	filewriter = CountingFileWriter('')
 	time_function = Timer().time
-	logger._set_filewriter(filewriter)
-	logger._set_time_function(time_function)
+	logger = Logger(filewriter, time_function)
 
 	@logger.logtime
 	def f(n):
@@ -149,11 +146,9 @@ def test_data_is_saved_continuously():
 
 
 def test_data_is_unsaved_when_specified():
-	logger = create_logger(save=False)
 	filewriter = CountingFileWriter('')
 	time_function = Timer().time
-	logger._set_filewriter(filewriter)
-	logger._set_time_function(time_function)
+	logger = Logger(filewriter, time_function, save=False)
 
 	@logger.logtime
 	def f(n):
@@ -168,11 +163,9 @@ def test_data_is_unsaved_when_specified():
 
 
 def test_data_is_saved_when_called():
-	logger = create_logger(save=False)
 	filewriter = CountingFileWriter('')
 	time_function = Timer().time
-	logger._set_filewriter(filewriter)
-	logger._set_time_function(time_function)	
+	logger = Logger(filewriter, time_function, save=False)
 
 	@logger.logtime
 	def f(n):
