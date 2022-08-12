@@ -72,4 +72,4 @@ class Logger:
 
 def create_logger(save=True):
 	filewriter = DefaultFileWriter()
-	return Logger(filewriter, time.time, save=save)
+	return Logger(filewriter, time.perf_counter, save=save)
